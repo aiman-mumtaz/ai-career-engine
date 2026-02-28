@@ -108,7 +108,7 @@ st.markdown("""
 # test_email = st.sidebar.text_input("Player Email", value="your@email.com")
 
 # if testing_mode:
-#     st.sidebar.info("🍄 Power-up active: Emails are redirected to you.")
+#     st.sidebar.info("Power-up active: Emails are redirected to you.")
 
 st.title("Super Liason")
 
@@ -119,9 +119,13 @@ with st.container():
     with col1:
         st.write("🎮 CONTROLLER")
         testing_mode = st.toggle("TEST MODE", value=True)
+        if testing_mode:
+            # st.markdown(":small[Power-up active: Emails are redirected to you.]")
+            st.markdown('<p style="font-size: 8px; text-align: left; font-color: black">Power-up active: Emails are redirected to you.</p>', unsafe_allow_html=True)
     with col2:
         test_email = st.text_input("TEST PLAYER EMAIL", value="your@email.com", disabled=not testing_mode)
     st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 st.subheader("Level 1-1: The Job Hunt")
