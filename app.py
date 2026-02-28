@@ -6,43 +6,53 @@ import uuid
 from utils.parser import extract_text_from_pdf
 from utils.ai_engine import identify_persona, generate_email
 from utils.mailer import send_email
+import base64
 
-
-def play_mario_sound(url):
-    """Triggers a unique audio element to bypass browser autoplay blocks."""
-    unique_id = str(uuid.uuid4())
-    sound_html = f"""
-        <div id="{unique_id}">
-            <audio autoplay="true" style="display:none;">
-                <source src="{url}" type="audio/mpeg">
+def play_mario_sound(file_path):
+    try:
+        with open(file_path, "rb") as f:
+            data = f.read()
+            b64 = base64.b64encode(data).decode()
+            
+        unique_id = str(uuid.uuid4())
+        sound_html = f"""
+            <audio id="{unique_id}" autoplay="true" style="display:none;">
+                <source src="data:audio/mp3;base64,{b64}" type="audio/mp3">
             </audio>
-        </div>
-    """
-    st.components.v1.html(sound_html, height=0)
+            <script>
+                var audio = document.getElementById('{unique_id}');
+                audio.volume = 0.5;
+                audio.play().catch(function(error) {{
+                    console.log("Autoplay blocked by browser. User must interact first.");
+                }});
+            </script>
+        """
+        st.components.v1.html(sound_html, height=0)
+    except FileNotFoundError:
+        st.error(f"Sound file not found: {file_path}")
 
-SND_COIN = "https://www.myinstants.com/media/sounds/mario-coin.mp3"
-SND_FIREBALL = "https://www.myinstants.com/media/sounds/super-mario-fireball.mp3"
-SND_POWER_UP = "https://www.myinstants.com/media/sounds/mario-power-up.mp3"
-SND_CLEAR = "https://www.myinstants.com/media/sounds/super-mario-bros-level-complete-theme.mp3"
+SND_COIN = "sounds/super-mario-coin-sound.mp3"
+SND_FIREBALL = "sounds/mario-fireball.mp3"
+SND_POWER_UP = "sounds/01-power-up-mario.mp3"
+SND_CLEAR = "sounds/super-mario-kart-mario-wins.mp3"
+SND_GAME_OVER = "sounds/super-mario-death-sound-sound-effect.mp3"
+SND_BEGIN = "sounds/super-mario-bros-music.mp3"
+
 
 st.set_page_config(page_title="Super Liaison World", page_icon="🍄", layout="wide")
 st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-        /* 1. SKY & GLOBAL RESET */
         .stApp {
             background-color: #5C94FC !important;
             background-image: url('https://www.transparenttextures.com/patterns/8-bit-mario.png') !important;
         }
 
-        /* 2. EXORCISM: Remove Sidebar/Header Ghosts */
         header, [data-testid="stHeader"], [data-testid="collapsedControl"], [data-testid="stSidebar"] {
             display: none !important;
             visibility: hidden !important;
         }
-
-        /* 3. THE GROUND */
         .mario-ground {
             position: fixed;
             bottom: 0;
@@ -101,8 +111,31 @@ st.markdown("""
     <div class="mario-ground"></div>
     """, unsafe_allow_html=True)
 
+# if 'game_started' not in st.session_state:
+#     st.session_state.game_started = False
 
+# if not st.session_state.game_started:
+#     # Center the start button
+#     st.write("# 🍄 SUPER LIAISON WORLD")
+#     st.write("### [ PRESS START TO BEGIN ]")
+    
+#     if st.button("🕹️ START MISSION"):
+#         play_mario_sound(SND_BEGIN)
+#         st.session_state.game_started = True
+#         st.info("Level Loading... Click again to enter.") 
+#     st.stop()
+if 'game_started' not in st.session_state:
+    st.session_state.game_started = False
 
+if not st.session_state.game_started:
+    st.write("# 🍄 SUPER LIAISON WORLD")
+    st.write("### [ PRESS START TO BEGIN ]")
+    
+    if st.button("🕹️ START MISSION"):
+        play_mario_sound(SND_BEGIN)
+    # play_mario_sound(SND_BEGIN)
+        st.session_state.game_started = True
+    st.stop()
 # st.sidebar.markdown("### 🎮 Controller")
 # testing_mode = st.sidebar.toggle("Testing Mode (Safety Bubble)", value=True)
 # test_email = st.sidebar.text_input("Player Email", value="your@email.com")
@@ -189,6 +222,8 @@ if uploaded_resume:
                         time.sleep(0.5)
                     except Exception as e:
                         st.error(f"Mission Failed: {e}")
+                        play_mario_sound(SND_GAME_OVER)
+                        st.stop()
             
             st.write("### LEVEL COMPLETE")
             play_mario_sound(SND_CLEAR)
