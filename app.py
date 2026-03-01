@@ -129,7 +129,7 @@ with st.container():
             # st.markdown(":small[Power-up active: Emails are redirected to you.]")
             st.markdown('<p style="font-size: 8px; text-align: left; font-color: black">Power-up active: Emails are redirected to you.</p>', unsafe_allow_html=True)
     with col2:
-        test_email = st.text_input("TEST PLAYER EMAIL", value="your@email.com", disabled=not testing_mode)
+        test_email = st.text_input("TEST PLAYER EMAIL", value="aimanmumtaz001@gmail.com", disabled=not testing_mode)
     st.markdown('</div>', unsafe_allow_html=True)
 
 
@@ -193,6 +193,10 @@ if uploaded_resume:
                         st.write(f"✅ Fireball sent to {target_recipient}!")
                         play_mario_sound(SND_FIREBALL)
                         time.sleep(0.5)
+                        if testing_mode:
+                            st.info(f"TEST MODE: Email sent to {target_recipient}. Check your inbox!")
+                            play_mario_sound(SND_CLEAR)
+                            st.stop()
                     except Exception as e:
                         st.error(f"Mission Failed: {e}")
                         play_mario_sound(SND_GAME_OVER)
