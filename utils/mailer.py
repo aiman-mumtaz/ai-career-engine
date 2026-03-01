@@ -4,6 +4,11 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 
 def send_email(to_email, subject, body, pdf_bytes, filename):
+
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+    server.starttls()
+    server.login(SENDER_EMAIL, SENDER_PASSWORD)
+    
     msg = MIMEMultipart()
     msg['From'] = os.getenv("SENDER_EMAIL")
     msg['To'] = to_email
