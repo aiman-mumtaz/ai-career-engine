@@ -22,7 +22,7 @@ def identify_persona(resume_text):
 
 def generate_email(resume_text, company_name, persona):
     prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are applying for a job. Write a formal cold email (max 100 words) to the recruiter. Focus on top, most mentioned skill from the resume. Use a professional tone and avoid generic phrases."),
+        ("system", "You are applying for a job. Write a formal cold email (max 100 words) to the recruiter. Focus on top, most mentioned skill from the resume. Use a professional tone and avoid generic phrases. Add line breaks after full stops for professional look and end with Yours Sincerely and full name and add mobile number only if present in resume."),
         ("user", "Resume: {resume}\nCompany: {company}\nRole: {role}\n\nFormat:\nSUBJECT: [Subject]\nBODY: [Body]")
     ])
     chain = prompt | llm
